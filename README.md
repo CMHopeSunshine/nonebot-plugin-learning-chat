@@ -69,7 +69,7 @@ _✨ 让Bot学习群友的发言和表情包! ✨_
 
 打开 nonebot2 项目的 `bot.py` 文件, 在其中写入
 
-    nonebot.load_plugin('nonebot_plugin_learning-chat')
+    nonebot.load_plugin('nonebot_plugin_learning_chat')
 
 </details>
 
@@ -162,6 +162,9 @@ _✨ 让Bot学习群友的发言和表情包! ✨_
 **请在登入之后，修改默认的用户名、密码以及加密所用的token密钥。**
 
 ## 👌 其他
+- 可以尝试安装以下包提高插件性能。
+  + `pip install ujson`
+  + `pip install jieba_fast`
 - 打开`DEBUG`级别日志可以查看到插件的学习和回复过程。
 - [小派蒙](https://github.com/CMHopeSunshine/LittlePaimon)中已内置该插件，就不要重复装啦！
 
