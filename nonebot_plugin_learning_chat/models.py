@@ -1,7 +1,7 @@
 import functools
 from functools import cached_property
 from pathlib import Path
-from typing import List
+from typing import List, Dict, Any
 
 try:
     import ujson as json
@@ -16,6 +16,22 @@ except ImportError:
 from tortoise import fields, Tortoise
 from tortoise.models import Model
 from .config import config_manager, driver
+
+from tortoise.connection import ConnectionHandler
+
+DBConfigType = Dict[str, Any]
+
+
+async def _init(self, db_config: "DBConfigType", create_db: bool):
+    if self._db_config is None:
+        self._db_config = db_config
+    else:
+        self._db_config.update(db_config)
+    self._create_db = create_db
+    await self._init_connections()
+
+
+ConnectionHandler._init = _init
 
 config = config_manager.config
 
