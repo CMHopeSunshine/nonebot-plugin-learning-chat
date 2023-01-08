@@ -15,7 +15,7 @@ from nonebot import get_bot, logger as nb_logger
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment, ActionFailed
 from tortoise.functions import Count
 from .models import ChatBlackList, ChatContext, ChatAnswer, ChatMessage
-from .config import config_manager, SUPERUSERS, NICKNAME
+from .config import config_manager, SUPERUSERS, NICKNAME, COMMAND_START
 
 chat_config = config_manager.config
 
@@ -82,6 +82,9 @@ class LearningChat:
         if not chat_config.total_enable or not self.config.enable:
             log_debug('群聊学习', f'➤该群<m>{self.data.group_id}</m>未开启群聊学习，跳过')
             # 如果未开启群聊学习，跳过
+            return Result.Pass
+        elif COMMAND_START and self.data.message.startswith(tuple(COMMAND_START)):
+            # 如果消息以command_start开头，跳过
             return Result.Pass
         elif self.data.user_id in self.ban_users:
             # 发言人在屏蔽列表中，跳过

@@ -27,7 +27,7 @@ requestAdaptor(api) {
 responseAdaptor = '''
 responseAdaptor(api, payload, query, request, response) {
     if (response.data.detail == '登录验证失败或已失效，请重新登录') {
-        window.location.href = '/LittlePaimon/login'
+        window.location.href = '/learning_chat/login'
         window.localStorage.clear()
         window.sessionStorage.clear()
         window.alert('登录验证失败或已失效，请重新登录')

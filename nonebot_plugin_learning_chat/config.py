@@ -21,6 +21,10 @@ try:
 except Exception:
     NICKNAME = 'bot'
 
+COMMAND_START = driver.config.command_start
+if '' in COMMAND_START:
+    COMMAND_START.remove('')
+
 
 class ChatGroupConfig(BaseModel):
     enable: bool = Field(True, alias='群聊学习开关')
