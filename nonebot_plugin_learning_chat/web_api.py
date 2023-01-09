@@ -247,7 +247,7 @@ async def init_web():
             'msg':    'ok',
             'data':   {
                 'items': items,
-                'total': len(items)
+                'total': await ChatBlackList.filter(**filter_arg).count()
             }
         }
 

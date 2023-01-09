@@ -155,6 +155,7 @@ blacklist_table = TableCRUD(mode='table',
                             title='',
                             syncLocation=False,
                             api='/learning_chat/api/get_chat_blacklist',
+                            interval=15000,
                             headerToolbar=[ActionType.Ajax(label='取消所有禁用',
                                                            level=LevelEnum.warning,
                                                            confirmText='确定要取消所有禁用吗？',
@@ -300,7 +301,7 @@ message_page = PageSchema(url='/messages', icon='fa fa-comments', label='群聊�
                           schema=Page(title='群聊消息', body=[
                               Alert(level=LevelEnum.info,
                                     className='white-space-pre-wrap',
-                                    body=(f'此数据库记录了{NICKNAME}收到的除指令外的聊天记录。\n'
+                                    body=(f'此数据库记录了{NICKNAME}收到的聊天记录。\n'
                                           '· 点击"禁用"可以将某条聊天记录进行禁用，这样其相关的学习就会列入禁用列表。\n'
                                           '· 点击"删除"可以删除某条记录，但不会影响它的学习。\n'
                                           f'· 可以通过搜索{NICKNAME}的QQ号，来查看它的回复记录。')),
