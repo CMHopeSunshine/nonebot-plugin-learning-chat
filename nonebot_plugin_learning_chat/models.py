@@ -15,7 +15,7 @@ except ImportError:
     import jieba.analyse as jieba_analyse
 from tortoise import fields, Tortoise
 from tortoise.models import Model
-from .config import config_manager, driver
+from .config import config_manager, driver, log_info
 
 from tortoise.connection import ConnectionHandler
 
@@ -144,5 +144,16 @@ class ChatBlackList(Model):
 
 @driver.on_startup
 async def startup():
-    await Tortoise.init(db_url=f'sqlite://{DATABASE_PATH}', modules={'models': [__name__]})
-    await Tortoise.generate_schemas()
+    try:
+        await Tortoise.init(db_url=f'sqlite://{DATABASE_PATH}', modules={'models': [__name__]})
+        await Tortoise.generate_schemas()
+        log_info('群聊学习', '数据库连接<g>成功</g>')
+    except Exception as e:
+        log_info('群聊学习', f'数据库连接<r>失败，{e}</r>')
+        raise e
+
+
+@driver.on_shutdown
+async def shutdown():
+    await Tortoise.close_connections()
+    log_info('群聊学习', '数据库断开连接<g>成功</g>')

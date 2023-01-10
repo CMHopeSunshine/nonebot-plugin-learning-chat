@@ -11,11 +11,11 @@ except ImportError:
     import jieba.analyse as jieba_analyse
 from typing import List, Union, Optional, Tuple
 from enum import IntEnum, auto
-from nonebot import get_bot, logger as nb_logger
+from nonebot import get_bot
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment, ActionFailed
 from tortoise.functions import Count
 from .models import ChatBlackList, ChatContext, ChatAnswer, ChatMessage
-from .config import config_manager, SUPERUSERS, NICKNAME, COMMAND_START
+from .config import config_manager, SUPERUSERS, NICKNAME, COMMAND_START, log_info, log_debug
 
 chat_config = config_manager.config
 
@@ -26,14 +26,6 @@ SORRY_WORDS = [f'{NICKNAME}知道错了...达咩!', f'{NICKNAME}不会再这么�
 DOUBT_WORDS = [f'{NICKNAME}有说什么奇怪的话吗？']
 BREAK_REPEAT_WORDS = ['打断复读', '打断！']
 ALL_WORDS = NO_PERMISSION_WORDS + SORRY_WORDS + DOUBT_WORDS + ENABLE_WORDS + DISABLE_WORDS + BREAK_REPEAT_WORDS
-
-
-def log_debug(command: str, info: str):
-    nb_logger.opt(colors=True).debug(f'<u><y>[{command}]</y></u>{info}')
-
-
-def log_info(command: str, info: str):
-    nb_logger.opt(colors=True).info(f'<u><y>[{command}]</y></u>{info}')
 
 
 class Result(IntEnum):

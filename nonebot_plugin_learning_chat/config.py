@@ -100,3 +100,11 @@ class ChatConfigManager:
 
 
 config_manager = ChatConfigManager()
+
+
+def log_debug(command: str, info: str):
+    logger.opt(colors=True).debug(f'<u><y>[{command}]</y></u>{info}')
+
+
+def log_info(command: str, info: str):
+    logger.opt(colors=True).info(f'<u><y>[{command}]</y></u>{info}')
