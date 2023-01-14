@@ -61,7 +61,7 @@ async def _(event: GroupMessageEvent, answers=Arg('answers')):
                         f'{NICKNAME}向群<m>{event.group_id}</m>的回复<m>"{answer}"</m>发送<r>失败，可能处于风控中</r>')
 
 
-@scheduler.scheduled_job('interval', minutes=1, misfire_grace_time=5)
+@scheduler.scheduled_job('interval', minutes=3, misfire_grace_time=5)
 async def speak_up():
     if not config_manager.config.total_enable:
         return
