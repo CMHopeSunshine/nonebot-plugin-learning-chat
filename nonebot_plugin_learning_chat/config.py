@@ -21,7 +21,7 @@ try:
 except Exception:
     NICKNAME = 'bot'
 
-COMMAND_START = driver.config.command_start
+COMMAND_START = driver.config.command_start.copy()
 if '' in COMMAND_START:
     COMMAND_START.remove('')
 
