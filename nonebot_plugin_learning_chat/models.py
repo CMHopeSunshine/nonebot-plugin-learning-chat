@@ -15,9 +15,9 @@ except ImportError:
     import jieba.analyse as jieba_analyse
 from tortoise import fields, Tortoise
 from tortoise.models import Model
-from .config import config_manager, driver, log_info
-
 from tortoise.connection import ConnectionHandler
+
+from .config import config_manager, driver, log_info
 
 DBConfigType = Dict[str, Any]
 
@@ -44,22 +44,14 @@ jieba.load_userdict(config.dictionary)  # 加载用户自定义的词典
 
 
 class ChatMessage(Model):
-    id: int = fields.IntField(pk=True, generated=True, auto_increment=True)
-    """自增主键"""
-    group_id: int = fields.IntField()
-    """群id"""
-    user_id: int = fields.IntField()
-    """用户id"""
-    message_id: int = fields.IntField()
-    """消息id"""
-    message: str = fields.TextField()
-    """消息"""
-    raw_message: str = fields.TextField()
-    """原始消息"""
-    plain_text: str = fields.TextField()
-    """纯文本消息"""
-    time: int = fields.IntField()
-    """时间戳"""
+    id = fields.IntField(pk=True, generated=True, auto_increment=True)
+    group_id = fields.IntField()
+    user_id = fields.IntField()
+    message_id = fields.IntField()
+    message = fields.TextField()
+    raw_message = fields.TextField()
+    plain_text = fields.TextField()
+    time = fields.IntField()
 
     class Meta:
         table = 'message'
@@ -67,36 +59,30 @@ class ChatMessage(Model):
         ordering = ['-time']
 
     @cached_property
-    def is_plain_text(self) -> bool:
-        """是否纯文本"""
+    def is_plain_text(self):
         return '[CQ:' not in self.message
 
     @cached_property
-    def keyword_list(self) -> List[str]:
-        """获取纯文本部分的关键词列表"""
+    def keyword_list(self):
         if not self.is_plain_text and not len(self.plain_text):
             return []
         return jieba_analyse.extract_tags(self.plain_text, topK=config.KEYWORDS_SIZE)
 
     @cached_property
-    def keywords(self) -> str:
-        """获取纯文本部分的关键词结果"""
+    def keywords(self):
         if not self.is_plain_text and not len(self.plain_text):
             return self.message
-        return self.message if len(self.keyword_list) < 2 else ' '.join(self.keyword_list)
+        return (
+            self.message if len(self.keyword_list) < 2 else ' '.join(self.keyword_list)
+        )
 
 
 class ChatContext(Model):
-    id: int = fields.IntField(pk=True, generated=True, auto_increment=True)
-    """自增主键"""
-    keywords: str = fields.TextField()
-    """关键词"""
-    time: int = fields.IntField()
-    """时间戳"""
-    count: int = fields.IntField(default=1)
-    """次数"""
+    id = fields.IntField(pk=True, generated=True, auto_increment=True)
+    keywords = fields.TextField()
+    time = fields.IntField()
+    count = fields.IntField(default=1)
     answers: fields.ReverseRelation['ChatAnswer']
-    """答案"""
 
     class Meta:
         table = 'context'
@@ -105,21 +91,13 @@ class ChatContext(Model):
 
 
 class ChatAnswer(Model):
-    id: int = fields.IntField(pk=True, generated=True, auto_increment=True)
-    """自增主键"""
-    keywords: str = fields.TextField()
-    """关键词"""
-    group_id: int = fields.IntField()
-    """群id"""
-    count: int = fields.IntField(default=1)
-    """次数"""
-    time: int = fields.IntField()
-    """时间戳"""
-    messages: List[str] = fields.JSONField(encoder=JSON_DUMPS, default=list)
-    """消息列表"""
-
-    context: fields.ForeignKeyNullableRelation[ChatContext] = fields.ForeignKeyField(
-        'models.ChatContext', related_name='answers', null=True)
+    id = fields.IntField(pk=True, generated=True, auto_increment=True)
+    keywords = fields.TextField()
+    group_id = fields.IntField()
+    count = fields.IntField(default=1)
+    time = fields.IntField()
+    messages = fields.JSONField(encoder=JSON_DUMPS, default=list)
+    context = fields.ForeignKeyNullableRelation[ChatContext]
 
     class Meta:
         table = 'answer'
@@ -128,14 +106,10 @@ class ChatAnswer(Model):
 
 
 class ChatBlackList(Model):
-    id: int = fields.IntField(pk=True, generated=True, auto_increment=True)
-    """自增主键"""
-    keywords: str = fields.TextField()
-    """关键词"""
-    global_ban: bool = fields.BooleanField(default=False)
-    """是否全局禁用"""
-    ban_group_id: List[int] = fields.JSONField(default=list)
-    """禁用的群id"""
+    id = fields.IntField(pk=True, generated=True, auto_increment=True)
+    keywords = fields.TextField()
+    global_ban = fields.BooleanField(default=False)
+    ban_group_id = fields.JSONField(default=list)
 
     class Meta:
         table = 'blacklist'
@@ -145,15 +119,17 @@ class ChatBlackList(Model):
 @driver.on_startup
 async def startup():
     try:
-        await Tortoise.init(db_url=f'sqlite://{DATABASE_PATH}', modules={'models': [__name__]})
+        await Tortoise.init(
+            db_url=f'sqlite://{DATABASE_PATH}', modules={'models': [__name__]}
+        )
         await Tortoise.generate_schemas()
-        log_info('群聊学习', '数据库连接<g>成功</g>')
+        log_info('群聊学习', '数据库连接成功')
     except Exception as e:
-        log_info('群聊学习', f'数据库连接<r>失败，{e}</r>')
+        log_info('群聊学习', f'数据库连接失败，{e}')
         raise e
 
 
 @driver.on_shutdown
 async def shutdown():
     await Tortoise.close_connections()
-    log_info('群聊学习', '数据库断开连接<g>成功</g>')
+    log_info('群聊学习', '数据库断开连接成功')
