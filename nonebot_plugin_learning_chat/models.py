@@ -35,11 +35,11 @@ ConnectionHandler._init = _init
 
 config = config_manager.config
 
-DATABASE_PATH = Path() / 'data' / 'learning_chat' / 'learning_chat.db'
+DATABASE_PATH = Path() / "data" / "learning_chat" / "learning_chat.db"
 DATABASE_PATH.parent.mkdir(parents=True, exist_ok=True)
 JSON_DUMPS = functools.partial(json.dumps, ensure_ascii=False)
 jieba.setLogLevel(jieba.logging.INFO)
-jieba.load_userdict(str(Path(__file__).parent / 'genshin_word.txt'))  # 加载原神词典
+jieba.load_userdict(str(Path(__file__).parent / "genshin_word.txt"))  # 加载原神词典
 jieba.load_userdict(config.dictionary)  # 加载用户自定义的词典
 
 
@@ -62,14 +62,14 @@ class ChatMessage(Model):
     """时间戳"""
 
     class Meta:
-        table = 'message'
-        indexes = ('group_id', 'time')
-        ordering = ['-time']
+        table = "message"
+        indexes = ("group_id", "time")
+        ordering = ["-time"]
 
     @cached_property
     def is_plain_text(self) -> bool:
         """是否纯文本"""
-        return '[CQ:' not in self.message
+        return "[CQ:" not in self.message
 
     @cached_property
     def keyword_list(self) -> List[str]:
@@ -83,7 +83,9 @@ class ChatMessage(Model):
         """获取纯文本部分的关键词结果"""
         if not self.is_plain_text and not len(self.plain_text):
             return self.message
-        return self.message if len(self.keyword_list) < 2 else ' '.join(self.keyword_list)
+        return (
+            self.message if len(self.keyword_list) < 2 else " ".join(self.keyword_list)
+        )
 
 
 class ChatContext(Model):
@@ -95,13 +97,13 @@ class ChatContext(Model):
     """时间戳"""
     count: int = fields.IntField(default=1)
     """次数"""
-    answers: fields.ReverseRelation['ChatAnswer']
+    answers: fields.ReverseRelation["ChatAnswer"]
     """答案"""
 
     class Meta:
-        table = 'context'
-        indexes = ('keywords', 'time')
-        ordering = ['-time']
+        table = "context"
+        indexes = ("keywords", "time")
+        ordering = ["-time"]
 
 
 class ChatAnswer(Model):
@@ -119,12 +121,13 @@ class ChatAnswer(Model):
     """消息列表"""
 
     context: fields.ForeignKeyNullableRelation[ChatContext] = fields.ForeignKeyField(
-        'models.ChatContext', related_name='answers', null=True)
+        "models.ChatContext", related_name="answers", null=True
+    )
 
     class Meta:
-        table = 'answer'
-        indexes = ('keywords', 'time')
-        ordering = ['-time']
+        table = "answer"
+        indexes = ("keywords", "time")
+        ordering = ["-time"]
 
 
 class ChatBlackList(Model):
@@ -138,22 +141,24 @@ class ChatBlackList(Model):
     """禁用的群id"""
 
     class Meta:
-        table = 'blacklist'
-        indexes = ('keywords',)
+        table = "blacklist"
+        indexes = ("keywords",)
 
 
 @driver.on_startup
 async def startup():
     try:
-        await Tortoise.init(db_url=f'sqlite://{DATABASE_PATH}', modules={'models': [__name__]})
+        await Tortoise.init(
+            db_url=f"sqlite://{DATABASE_PATH}", modules={"models": [__name__]}
+        )
         await Tortoise.generate_schemas()
-        log_info('群聊学习', '数据库连接<g>成功</g>')
+        log_info("群聊学习", "数据库连接<g>成功</g>")
     except Exception as e:
-        log_info('群聊学习', f'数据库连接<r>失败，{e}</r>')
+        log_info("群聊学习", f"数据库连接<r>失败，{e}</r>")
         raise e
 
 
 @driver.on_shutdown
 async def shutdown():
     await Tortoise.close_connections()
-    log_info('群聊学习', '数据库断开连接<g>成功</g>')
+    log_info("群聊学习", "数据库断开连接<g>成功</g>")
