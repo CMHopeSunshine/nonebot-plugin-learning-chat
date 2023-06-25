@@ -5,7 +5,8 @@ from fastapi import FastAPI
 from fastapi import Header, HTTPException, Depends
 from fastapi.responses import JSONResponse, HTMLResponse, RedirectResponse
 from jose import jwt
-from nonebot import get_bot, get_app
+from nonebot import get_app, get_adapter
+from nonebot.adapters.onebot.v11 import Adapter
 from pydantic import BaseModel
 
 try:
@@ -90,7 +91,11 @@ async def init_web():
     )
     async def get_group_list_api():
         try:
-            group_list = await get_bot().get_group_list()
+            bots = get_adapter(Adapter).bots
+            if len(bots) == 0:
+                return {"status": -100, "msg": "获取群和好友列表失败，请确认已连接GOCQ"}
+            bot = list(bots.values())[0]
+            group_list = await bot.get_group_list()
             group_list = [
                 {
                     "label": f'{group["group_name"]}({group["group_id"]})',
@@ -109,7 +114,10 @@ async def init_web():
     )
     async def get_chat_global_config():
         try:
-            bot = get_bot()
+            bots = get_adapter(Adapter).bots
+            if len(bots) == 0:
+                return {"status": -100, "msg": "获取群和好友列表失败，请确认已连接GOCQ"}
+            bot = list(bots.values())[0]
             groups = await bot.get_group_list()
             member_list = []
             for group in groups:
@@ -153,7 +161,11 @@ async def init_web():
     )
     async def get_chat_group_config(group_id: int):
         try:
-            members = await get_bot().get_group_member_list(group_id=group_id)
+            bots = get_adapter(Adapter).bots
+            if len(bots) == 0:
+                return {"status": -100, "msg": "获取群和好友列表失败，请确认已连接GOCQ"}
+            bot = list(bots.values())[0]
+            members = await bot.get_group_member_list(group_id=group_id)
             member_list = [
                 {
                     "label": f'{member["nickname"] or member["card"]}({member["user_id"]})',
@@ -185,10 +197,14 @@ async def init_web():
             data["speak_continuously_probability"] / 100
         )
         data["speak_poke_probability"] = data["speak_poke_probability"] / 100
+        bots = get_adapter(Adapter).bots
+        if len(bots) == 0:
+            return {"status": -100, "msg": "获取群和好友列表失败，请确认已连接GOCQ"}
+        bot = list(bots.values())[0]
         groups = (
             [{"group_id": group_id}]
             if group_id != "all"
-            else await get_bot().get_group_list()
+            else await bot.get_group_list()
         )
         for group in groups:
             config = config_manager.get_group_config(int(group["group_id"]))

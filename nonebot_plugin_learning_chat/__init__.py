@@ -2,8 +2,8 @@ import asyncio
 import random
 import time
 
-from nonebot import on_message, get_bot, require, logger
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, GROUP, Message, ActionFailed
+from nonebot import on_message, require, logger, get_adapter
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, GROUP, Message, ActionFailed, Adapter
 from nonebot.params import Arg
 from nonebot.plugin import PluginMetadata
 from nonebot.rule import Rule
@@ -80,7 +80,10 @@ async def speak_up():
     if not config_manager.config.total_enable:
         return
     try:
-        bot = get_bot()
+        bots = get_adapter(Adapter).bots
+        if len(bots) == 0:
+            return
+        bot = list(bots.values())[0]
     except ValueError:
         return
     if not (speak := await LearningChat.speak(int(bot.self_id))):
