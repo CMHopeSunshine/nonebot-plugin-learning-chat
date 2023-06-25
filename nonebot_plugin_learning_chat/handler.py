@@ -11,8 +11,8 @@ except ImportError:
     import jieba.analyse as jieba_analyse
 from typing import List, Union, Optional, Tuple
 from enum import IntEnum, auto
-from nonebot import get_bot
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment, ActionFailed
+from nonebot import get_adapter
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment, ActionFailed, Adapter
 from tortoise.functions import Count
 from .models import ChatBlackList, ChatContext, ChatAnswer, ChatMessage
 from .config import (
@@ -330,7 +330,10 @@ class LearningChat:
 
     async def _ban(self, message_id: Optional[int] = None) -> bool:
         """屏蔽消息"""
-        bot = get_bot()
+        bots = get_adapter(Adapter).bots
+        if len(bots) == 0:
+            return False
+        bot = list(bots.values())[0]
         if message_id:
             if (
                 not (message := await ChatMessage.filter(message_id=message_id).first())
