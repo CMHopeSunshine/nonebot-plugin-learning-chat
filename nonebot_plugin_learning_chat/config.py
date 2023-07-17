@@ -1,9 +1,9 @@
 from typing import List, Dict
 from pathlib import Path
-
 from pydantic import BaseModel, Field
 
 from nonebot import get_driver, logger
+from nonebot.utils import escape_tag
 from ruamel import yaml
 
 CONFIG_PATH = Path() / "data" / "learning_chat" / "learning_chat.yml"
@@ -108,8 +108,8 @@ config_manager = ChatConfigManager()
 
 
 def log_debug(command: str, info: str):
-    logger.opt(colors=True).debug(f"<u><y>[{command}]</y></u>{info}")
+    logger.opt(colors=True).debug(f"<u><y>[{command}]</y></u>{escape_tag(info)}")
 
 
 def log_info(command: str, info: str):
-    logger.opt(colors=True).info(f"<u><y>[{command}]</y></u>{info}")
+    logger.opt(colors=True).info(f"<u><y>[{command}]</y></u>{escape_tag(info)}")
