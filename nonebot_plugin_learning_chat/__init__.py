@@ -1,9 +1,22 @@
+from nonebot import require
+
+require("nonebot_plugin_tortoise_orm")
+from nonebot_plugin_tortoise_orm import add_model
+
+add_model("nonebot_plugin_learning_chat.models")
+
 import asyncio
 import random
 import time
 
 from nonebot import on_message, require, logger, get_adapter
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, GROUP, Message, ActionFailed, Adapter
+from nonebot.adapters.onebot.v11 import (
+    GroupMessageEvent,
+    GROUP,
+    Message,
+    ActionFailed,
+    Adapter,
+)
 from nonebot.params import Arg
 from nonebot.plugin import PluginMetadata
 from nonebot.rule import Rule
@@ -23,9 +36,7 @@ __plugin_meta__ = PluginMetadata(
     type="application",
     homepage="https://github.com/CMHopeSunshine/nonebot-plugin-learning-chat",
     supported_adapters={"~onebot.v11"},
-    extra={
-        "author": "惜月"
-    },
+    extra={"author": "惜月"},
 )
 
 
