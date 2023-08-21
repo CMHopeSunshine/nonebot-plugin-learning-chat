@@ -13,7 +13,7 @@ python = "^3.8"
 nonebot2 = { version = "^2.0.0", extras = ["fastapi"] }
 nonebot-adapter-onebot = "^2.1"
 nonebot-plugin-apscheduler = "^0.2.0"
-tortoise-orm = "^0.19.2"
+tortoise-orm = ">=0.20.0"
 jieba = "^0.42.1"
 "ruamel.yaml" = "^0.17.21"
 amis-python = "^1.0.6"
