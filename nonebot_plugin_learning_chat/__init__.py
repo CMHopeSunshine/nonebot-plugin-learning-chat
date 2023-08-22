@@ -1,9 +1,7 @@
 from nonebot import require
 
 require("nonebot_plugin_tortoise_orm")
-from nonebot_plugin_tortoise_orm import add_model
 
-add_model("nonebot_plugin_learning_chat.models")
 
 import asyncio
 import random

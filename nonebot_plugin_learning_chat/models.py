@@ -1,3 +1,11 @@
+from nonebot_plugin_tortoise_orm import add_model
+
+add_model(
+    __name__,
+    db_name="learning_chat",
+    db_url="sqlite://data/learning_chat/learning_chat.db",
+)
+
 import functools
 from functools import cached_property
 from pathlib import Path
@@ -121,7 +129,10 @@ class ChatAnswer(Model):
     """消息列表"""
 
     context: fields.ForeignKeyNullableRelation[ChatContext] = fields.ForeignKeyField(
-        "models.ChatContext", related_name="answers", null=True
+        # db_name.models_name
+        "learning_chat.ChatContext",
+        related_name="answers",
+        null=True,
     )
 
     class Meta:
@@ -143,22 +154,3 @@ class ChatBlackList(Model):
     class Meta:
         table = "blacklist"
         indexes = ("keywords",)
-
-
-# @driver.on_startup
-# async def startup():
-#     try:
-#         await Tortoise.init(
-#             db_url=f"sqlite://{DATABASE_PATH}", modules={"models": [__name__]}
-#         )
-#         await Tortoise.generate_schemas()
-#         log_info("群聊学习", "数据库连接<g>成功</g>")
-#     except Exception as e:
-#         log_info("群聊学习", f"数据库连接<r>失败，{e}</r>")
-#         raise e
-
-
-# @driver.on_shutdown
-# async def shutdown():
-#     await Tortoise.close_connections()
-#     log_info("群聊学习", "数据库断开连接<g>成功</g>")

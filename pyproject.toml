@@ -18,7 +18,7 @@ jieba = "^0.42.1"
 "ruamel.yaml" = "^0.17.21"
 amis-python = "^1.0.6"
 python-jose = "^3.3.0"
-nonebot-plugin-tortoise-orm = ">=0.1.0"
+nonebot-plugin-tortoise-orm = ">=0.1.1"
 
 [tool.poetry.dev-dependencies]
 
