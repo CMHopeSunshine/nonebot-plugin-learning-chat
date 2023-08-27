@@ -8,8 +8,7 @@ add_model(
 
 import functools
 from functools import cached_property
-from pathlib import Path
-from typing import List, Dict, Any
+from typing import List
 
 try:
     import ujson as json
@@ -25,21 +24,6 @@ from tortoise import fields
 from tortoise.models import Model
 from .config import config_manager
 
-from tortoise.connection import ConnectionHandler
-
-DBConfigType = Dict[str, Any]
-
-
-async def _init(self, db_config: "DBConfigType", create_db: bool):
-    if self._db_config is None:
-        self._db_config = db_config
-    else:
-        self._db_config.update(db_config)
-    self._create_db = create_db
-    await self._init_connections()
-
-
-ConnectionHandler._init = _init
 
 config = config_manager.config
 
@@ -47,7 +31,6 @@ config = config_manager.config
 # DATABASE_PATH.parent.mkdir(parents=True, exist_ok=True)
 JSON_DUMPS = functools.partial(json.dumps, ensure_ascii=False)
 jieba.setLogLevel(jieba.logging.INFO)
-jieba.load_userdict(str(Path(__file__).parent / "genshin_word.txt"))  # 加载原神词典
 jieba.load_userdict(config.dictionary)  # 加载用户自定义的词典
 
 
